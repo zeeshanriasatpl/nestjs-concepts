@@ -10,7 +10,6 @@ import { BlogService } from './blog.service';
 import { Post, PostSchema } from './schemas/post.schema';
 import { AuthMiddleware } from 'src/middlewares/auth';
 import { AuthModule } from '../auth/auth.module';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,7 +17,7 @@ import { JwtService } from '@nestjs/jwt';
     AuthModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, JwtService],
+  providers: [BlogService],
 })
 export class BlogModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
