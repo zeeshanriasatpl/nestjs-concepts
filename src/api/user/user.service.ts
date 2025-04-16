@@ -1,59 +1,72 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/common/prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
-    });
-  }
-
-  async findAll() {
-    return this.prisma.user.findMany({
-      include: {
-        posts: true,
-      },
-    });
-  }
-
-  async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        posts: true,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    return user;
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      return await this.prisma.user.update({
-        where: { id },
-        data: updateUserDto,
-      });
+      const createdUser = new this.userModel(createUserDto);
+      return createdUser.save();
     } catch (error) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      console.error(error);
+      throw error;
     }
   }
 
-  async remove(id: string) {
+  async findAll(): Promise<User[]> {
     try {
-      return await this.prisma.user.delete({
-        where: { id },
-      });
+      return this.userModel.find().exec();
     } catch (error) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async findOne(id: string): Promise<User> {
+    try {
+      const user = await this.userModel.findById(id).exec();
+      if (!user) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+      return user;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+      return updatedUser;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async remove(id: string): Promise<User> {
+    try {
+      const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+      if (!deletedUser) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+      return deletedUser;
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 }
