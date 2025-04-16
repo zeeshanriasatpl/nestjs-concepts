@@ -8,8 +8,9 @@ import { AuthService } from './auth.service';
   imports: [
     UserModule,
     JwtModule.register({
-      secret: 'your-secret-key',
-      signOptions: { expiresIn: '1h' },
+      secret:
+        '0D8iOSOy4xDlELZA8HolQw0DIzJhxsnJyWPEeunxRqv-zMHoo_iqQhOdVxvYFucL',
+      signOptions: { expiresIn: '60480000' },
     }),
   ],
   controllers: [AuthController],

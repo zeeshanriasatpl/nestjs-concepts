@@ -11,10 +11,11 @@ import {
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 @ApiTags('blogs')
+@ApiBearerAuth('jwt')
 @Controller('blogs')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}

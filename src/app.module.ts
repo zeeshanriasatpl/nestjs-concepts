@@ -6,9 +6,13 @@ import { BlogModule } from './api/blog/blog.module';
 import { UserModule } from './api/user/user.module';
 import { AuthModule } from './api/auth/auth.module';
 import { MongooseConfigModule } from './config/mongoose.config';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseConfigModule,
     MongooseModule.forRoot(process.env.DATABASE_URL || ''),
     BlogModule,

@@ -11,7 +11,7 @@ import { AuthService } from 'src/api/auth/auth.service';
 export class AuthMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -33,10 +33,12 @@ export class AuthMiddleware implements NestMiddleware {
       if (!user) {
         throw new UnauthorizedException('User not authorized');
       }
-      
+
       (req as any).user = user;
       next();
     } catch (error) {
+      console.log(error);
+
       throw new UnauthorizedException('Invalid token');
     }
   }

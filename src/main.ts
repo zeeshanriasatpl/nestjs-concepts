@@ -1,36 +1,33 @@
 import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
-
   const config = new DocumentBuilder()
-    .setTitle('NestJS concepts')
-    .setDescription('The cats API description')
+    .setTitle('NestJS API')
+    .setDescription('The NestJS API description')
     .setVersion('1.0')
     .addTag('NestJS')
     .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'jwt',
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'jwt', // This name here is important for matching @ApiBearerAuth() in your controllers!
     )
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  documentFactory.security = [{ jwt: [] }];
 
-  SwaggerModule.setup('api', app, documentFactory);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.APP_PORT || 3000, () => {
-    console.log(`server is listening on port:${process.env.APP_PORT}`);
+    console.log('Application is running on port:', process.env.APP_PORT || 3000);
   });
 }
 bootstrap();
