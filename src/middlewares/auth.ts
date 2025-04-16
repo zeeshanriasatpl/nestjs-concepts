@@ -15,30 +15,30 @@ export class AuthMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('No token provided');
-    }
-
-    const token = authHeader.split(' ')[1];
-
     try {
-      const tokenData = await this.jwtService.verify(token);
-      if (!tokenData) {
-        throw new UnauthorizedException('Invalid token, User not authorized');
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new UnauthorizedException('No token provided');
       }
-
+      
+      const token = authHeader.split(' ')[1];
+      const decoded = await this.jwtService.verify(token);
       const user = await this.authService.validateToken(token);
+      
       if (!user) {
-        throw new UnauthorizedException('User not authorized');
+        throw new UnauthorizedException('Invalid token');
       }
 
-      (req as any).user = user;
+      // Attach the complete user object to the request
+      (req as any).user = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        name: user.name
+      };
+
       next();
     } catch (error) {
-      console.log(error);
-
       throw new UnauthorizedException('Invalid token');
     }
   }

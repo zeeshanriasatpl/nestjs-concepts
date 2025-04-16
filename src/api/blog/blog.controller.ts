@@ -8,11 +8,14 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @ApiTags('blogs')
 @ApiBearerAuth('jwt')
@@ -21,6 +24,8 @@ export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('editor')
   @ApiOperation({ summary: 'Create a new blog' })
   @ApiResponse({ status: 201, description: 'Blog successfully created.' })
   async createBlog(@Body() createBlogDto: CreateBlogDto) {
@@ -42,6 +47,8 @@ export class BlogController {
   }
 
   @Put('update/:id')
+  @UseGuards(RolesGuard)
+  @Roles('editor')
   @ApiOperation({ summary: 'Update a blog' })
   @ApiResponse({ status: 200, description: 'Blog successfully updated.' })
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
@@ -49,6 +56,8 @@ export class BlogController {
   }
 
   @Delete('delete/:id')
+  @UseGuards(RolesGuard)
+  @Roles('editor')
   @ApiOperation({ summary: 'Delete a blog' })
   @ApiResponse({ status: 200, description: 'Blog successfully deleted.' })
   async remove(@Param('id') id: string) {
