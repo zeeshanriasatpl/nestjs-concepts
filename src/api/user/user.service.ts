@@ -41,6 +41,15 @@ export class UserService {
     }
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    try {
+      return this.userModel.findOne({ email }).exec();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       const updatedUser = await this.userModel

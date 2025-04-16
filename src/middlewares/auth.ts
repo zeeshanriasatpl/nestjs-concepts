@@ -28,12 +28,12 @@ export class AuthMiddleware implements NestMiddleware {
       throw new UnauthorizedException('Invalid token, User not authorized');
     }
 
-    const user = await this.userModel.findById(tokenData.id).exec();
+    // const user = await this.userModel.findById(tokenData.userId).exec();
 
-    if (!user) {
-      throw new UnauthorizedException('User not authorized');
-    }
-    req.user = user;
+    // if (!user) {
+    //   throw new UnauthorizedException('User not authorized');
+    // }
+    // req.user = user;
 
     next();
   }
