@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
   imports: [
     UserModule,
     JwtModule.register({
-      secret: 'your-secret-key', // In production, use environment variable
+      secret: 'your-secret-key',
       signOptions: { expiresIn: '1h' },
     }),
   ],

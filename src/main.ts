@@ -19,8 +19,14 @@ async function bootstrap() {
     .setDescription('The cats API description')
     .setVersion('1.0')
     .addTag('NestJS')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'jwt',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
+  documentFactory.security = [{ jwt: [] }];
+
   SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.APP_PORT || 3000, () => {
