@@ -20,11 +20,11 @@ export class AuthMiddleware implements NestMiddleware {
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new UnauthorizedException('No token provided');
       }
-      
+
       const token = authHeader.split(' ')[1];
-      const decoded = await this.jwtService.verify(token);
+      console.log('token ---1 > ', token);
       const user = await this.authService.validateToken(token);
-      
+
       if (!user) {
         throw new UnauthorizedException('Invalid token');
       }
@@ -34,7 +34,7 @@ export class AuthMiddleware implements NestMiddleware {
         _id: user._id,
         email: user.email,
         role: user.role,
-        name: user.name
+        name: user.name,
       };
 
       next();
