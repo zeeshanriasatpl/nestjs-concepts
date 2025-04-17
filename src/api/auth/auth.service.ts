@@ -20,14 +20,14 @@ export class AuthService {
     });
 
     const token = this.jwtService.sign({ userId: user._id.toString() });
-    return { 
+    return {
       user: {
         _id: user._id,
         email: user.email,
         role: user.role,
-        name: user.name
-      }, 
-      token 
+        name: user.name,
+      },
+      token,
     };
   }
 
@@ -47,21 +47,25 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ userId: user._id.toString() });
-    return { 
+    return {
       user: {
         _id: user._id,
         email: user.email,
         role: user.role,
-        name: user.name
-      }, 
-      token 
+        name: user.name,
+      },
+      token,
     };
   }
 
   async validateToken(token: string) {
     try {
+      console.log('token ---> ', token);
+
       const decoded = await this.jwtService.verify(token);
+      console.log('decoded ---> ', decoded);
       const user = await this.userService.findById(decoded.userId);
+      console.log('user ---> ', user);
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
