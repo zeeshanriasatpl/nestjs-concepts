@@ -3,24 +3,35 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
+  Scope,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { UserRequest } from 'src/common/interface/request';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class BlogService {
-  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
+  constructor(
+    @Inject(REQUEST) private readonly request: UserRequest,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+  ) {}
 
   async createBlog(dto: CreateBlogDto): Promise<Post> {
     try {
+      const user = this.request['user'];
+
+      console.log(user);
       const createdPost = new this.postModel({
         title: dto.title,
         content: dto.content,
+        author: user._id,
       });
       return createdPost.save();
     } catch (error) {

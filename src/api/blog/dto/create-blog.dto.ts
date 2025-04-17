@@ -13,4 +13,9 @@ export class CreateBlogDto {
   @IsOptional()
   @IsString()
   content?: string;
+
+  @ApiProperty({ example: 'author_id' })
+  @IsNotEmpty()
+  @IsString()
+  author: string;
 }

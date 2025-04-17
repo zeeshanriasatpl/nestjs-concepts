@@ -11,6 +11,7 @@ import { Post, PostSchema } from './schemas/post.schema';
 import { AuthMiddleware } from 'src/middlewares/auth';
 import { AuthModule } from '../auth/auth.module';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { RolesGuard } from 'src/guards/roles.guard';
     AuthModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, RolesGuard],
+  providers: [BlogService, RolesGuard, JwtService],
 })
 export class BlogModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
