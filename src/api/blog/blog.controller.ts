@@ -12,7 +12,12 @@ import {
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
-import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -44,6 +49,13 @@ export class BlogController {
   @ApiResponse({ status: 200, description: 'Return a single blog.' })
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(id);
+  }
+
+  @Get('getoneaggregation/:id')
+  @ApiOperation({ summary: 'Get a single blog' })
+  @ApiResponse({ status: 200, description: 'Return a single blog.' })
+  mongoAggregation(@Param('id') id: string) {
+    return this.blogService.mongoAggregation(id);
   }
 
   @Put('update/:id')

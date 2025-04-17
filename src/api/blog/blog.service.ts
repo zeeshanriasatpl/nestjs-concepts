@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -83,6 +83,56 @@ export class BlogService {
         );
       }
       return post;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Something went wrong',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async mongoAggregation(id: string): Promise<Post> {
+    try {
+      const post = await this.postModel.aggregate([
+        {
+          // $match: { _id: new Types.ObjectId(id) },
+          $match: { published: false, author: { $exists: true } },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'author',
+            foreignField: '_id',
+            as: 'author_details',
+          },
+        },
+        {
+          $addFields: {
+            total_users: { $sum: '$author' },
+          },
+        },
+        {
+          $count: 'total_users',
+        },
+      ]);
+      if (!post) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            message: `Post with ID ${id} not found`,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return post[0];
     } catch (error) {
       console.error(error);
       if (error instanceof HttpException) {
